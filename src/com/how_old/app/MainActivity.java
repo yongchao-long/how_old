@@ -1,5 +1,7 @@
 package com.how_old.app;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 import org.json.JSONArray;
@@ -22,14 +24,17 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -40,19 +45,26 @@ import android.provider.MediaStore;
 public class MainActivity extends ActionBarActivity implements OnClickListener{
 
 	private static final int PICK_CODE = 0;
+	private static final int TAKE_PHOTO = 3;
 	private Button getImage;
 	private Button Detect;
+	private Button takePhoto;
 	private ImageView Photo;
 	private TextView Tip;
 	private View Waitting;
 	private String mCurrentSrc;
 	private Bitmap mPhotoImg;
 	private Paint mPaint;
+	private Uri imageUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);//ÉèÖÃÈ«ÆÁ
 
+        setContentView(R.layout.activity_main);
+        
        initView();
        initEvent();
        mPaint = new Paint();
@@ -62,6 +74,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 		// TODO Auto-generated method stub
 		getImage.setOnClickListener(this);
 		Detect.setOnClickListener(this);
+		takePhoto.setOnClickListener(this);
 	}
 
 	private void initView() {
@@ -71,12 +84,14 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 		Photo = (ImageView) findViewById(R.id.id_Photo);
 		Tip = (TextView) findViewById(R.id.id_Tip);
 		Waitting =  findViewById(R.id.id_Waitting);
+		takePhoto = (Button) findViewById(R.id.id_takePhoto);
 	}
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		// TODO Auto-generated method stub
-		if(requestCode == PICK_CODE){
-		if(intent != null){
+		switch(requestCode){
+		case PICK_CODE:
+		    if(intent != null){
 			Uri uri = intent.getData();
 			Cursor cursor = getContentResolver().query(uri, null, null, null, null);
 			cursor.moveToFirst();
@@ -87,6 +102,17 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 		    Photo.setImageBitmap(mPhotoImg);
 		    Tip.setText("Click Detect ==>");
 		}
+		    break;
+		case TAKE_PHOTO:
+			Bitmap bmPhoto = (Bitmap) intent.getExtras().get("data");
+			mCurrentSrc = "image_capture";
+			mPhotoImg = bmPhoto;
+			Photo.setImageBitmap(mPhotoImg);
+			Tip.setText("Click Detect ==>");
+			
+			break;
+		default:
+			break;
 		}
 		super.onActivityResult(requestCode, resultCode, intent);
 	}
@@ -214,16 +240,23 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		switch(v.getId()){
+		case R.id.id_takePhoto:
+			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			startActivityForResult(intent, TAKE_PHOTO);
+			break;
 		case R.id.id_getImage:
-			Intent intent = new Intent(Intent.ACTION_PICK);
-			intent.setType("image/*");
-			startActivityForResult(intent, PICK_CODE);
+			Intent intent2 = new Intent(Intent.ACTION_PICK);
+			intent2.setType("image/*");
+			startActivityForResult(intent2, PICK_CODE);
 			break;
 			
 		case R.id.id_Detect:
 			Waitting.setVisibility(View.VISIBLE);
 			if(mCurrentSrc != null && !mCurrentSrc.trim().equals("")){
-				resizePhoto();
+				if (mCurrentSrc.equals("image_capture")){
+					
+				}
+				else {resizePhoto();}
 			}else{
 				mPhotoImg = BitmapFactory.decodeResource(getResources(), R.drawable.t4);
 			}

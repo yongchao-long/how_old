@@ -1,14 +1,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#ff9a00">
     
+    <Button 
+        android:id="@+id/id_takePhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:text="Take Photo"/>
     <Button 
         android:id="@+id/id_getImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/id_takePhoto"
+        android:layout_marginRight="5dp"
         android:text="Get Image"/>
     <Button 
         android:id="@+id/id_Detect"
@@ -16,7 +25,7 @@
         android:layout_height="wrap_content"
         android:text="Detect"
         android:layout_alignParentBottom="true"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="5dp"
         android:layout_toLeftOf="@id/id_getImage"/>
     <TextView 
         android:id="@+id/id_Tip"
@@ -25,7 +34,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignTop="@id/id_Detect"
         android:layout_toLeftOf="@id/id_Detect"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="5dp"
         android:gravity="center"/>
     <ImageView 
         android:id="@+id/id_Photo"
